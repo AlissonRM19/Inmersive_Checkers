@@ -109,6 +109,8 @@ void KillPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces, int *turn) {
 //Funcion para el movimiento de las piezas
 int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn) {
     if (s_Piece->color == sf::Color::Red || s_Piece->color == sf::Color::White && s_Piece->isKing) {
+
+        //Movimiento simple
         if (x == s_Piece->x - 1 && y == s_Piece->y - 1) {
             if (!FindPiece(x, y, RedPieces, WhitePieces)) {
                 *turn = ((*turn == 1) ? 2 : 1);
@@ -125,6 +127,8 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
                 return 1;
             }
         }
+
+        //Cuando come piesas
         if (x == s_Piece->x - 2 && y == s_Piece->y - 2) {
             if (!FindPiece(x, y, RedPieces, WhitePieces) && FindPiece(x+1,y+1,RedPieces, WhitePieces) != NULL && FindPiece(x + 1, y + 1, RedPieces, WhitePieces)->color != s_Piece->color) {
                 *turn = ((*turn == 1) ? 2 : 1);
@@ -144,6 +148,8 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
             }
         }
     }
+
+
     if (s_Piece->color == sf::Color::White || s_Piece->color == sf::Color::Red && s_Piece->isKing) {
         if (x == s_Piece->x - 1 && y == s_Piece->y + 1) {
             if (!FindPiece(x, y, RedPieces, WhitePieces)) {
@@ -181,6 +187,20 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
         }
     }
     return 0;
+}
+
+//Funcion para el AI
+//Piesas rojas jugador
+//Piesas blancas AI
+int bestmoveAI(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn){
+
+    int Possibilities = WhitePieces;
+    int searchedPossibilities {};
+
+    while (Possibilities != searchedPossibilities){
+
+    }
+
 }
 
 int main()

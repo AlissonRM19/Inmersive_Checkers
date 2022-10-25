@@ -106,8 +106,9 @@ void KillPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces, int *turn) {
     *turn = ((*turn == 1) ? 2 : 1);
     return;
 }
-//Funcion para el movimiento de las piezas
-int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn) {
+
+//Funcion de un solo movimiento
+int singleMovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn) {
     if (s_Piece->color == sf::Color::Red || s_Piece->color == sf::Color::White && s_Piece->isKing) {
 
         //Movimiento simple
@@ -127,8 +128,30 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
                 return 1;
             }
         }
-
-        //Cuando come piesas
+    }
+    if (s_Piece->color == sf::Color::White || s_Piece->color == sf::Color::Red && s_Piece->isKing) {
+        if (x == s_Piece->x - 1 && y == s_Piece->y + 1) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
+                *turn = ((*turn == 1) ? 2 : 1);
+                s_Piece->x = x;
+                s_Piece->y = y;
+                return 1;
+            }
+        }
+        if (x == s_Piece->x + 1 && y == s_Piece->y + 1) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
+                *turn = ((*turn == 1) ? 2 : 1);
+                s_Piece->x = x;
+                s_Piece->y = y;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+//Funcion para atacar
+int attackMovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn) {
+    if (s_Piece->color == sf::Color::Red || s_Piece->color == sf::Color::White && s_Piece->isKing) {
         if (x == s_Piece->x - 2 && y == s_Piece->y - 2) {
             if (!FindPiece(x, y, RedPieces, WhitePieces) && FindPiece(x+1,y+1,RedPieces, WhitePieces) != NULL && FindPiece(x + 1, y + 1, RedPieces, WhitePieces)->color != s_Piece->color) {
                 *turn = ((*turn == 1) ? 2 : 1);
@@ -148,25 +171,7 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
             }
         }
     }
-
-
     if (s_Piece->color == sf::Color::White || s_Piece->color == sf::Color::Red && s_Piece->isKing) {
-        if (x == s_Piece->x - 1 && y == s_Piece->y + 1) {
-            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
-                *turn = ((*turn == 1) ? 2 : 1);
-                s_Piece->x = x;
-                s_Piece->y = y;
-                return 1;
-            }
-        }
-        if (x == s_Piece->x + 1 && y == s_Piece->y + 1) {
-            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
-                *turn = ((*turn == 1) ? 2 : 1);
-                s_Piece->x = x;
-                s_Piece->y = y;
-                return 1;
-            }
-        }
         if (x == s_Piece->x - 2 && y == s_Piece->y + 2) {
             if (!FindPiece(x, y, RedPieces, WhitePieces) && FindPiece(x + 1, y - 1, RedPieces, WhitePieces) != NULL && FindPiece(x + 1, y - 1, RedPieces, WhitePieces)->color != s_Piece->color) {
                 *turn = ((*turn == 1) ? 2 : 1);
@@ -194,8 +199,8 @@ int MovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces
 //Piesas blancas AI
 int bestmoveAI(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn){
 
-    int Possibilities = WhitePieces;
-    int searchedPossibilities {};
+    Piece* Possibilities = WhitePieces;
+    Piece* searchedPossibilities {};
 
     while (Possibilities != searchedPossibilities){
 
@@ -264,7 +269,11 @@ int main()
 
                 selected = false;
             }
-            else if (SelectedPiece != NULL && MovePiece(x, y, SelectedPiece, RedPieces, WhitePieces, &turn)) {
+            else if (SelectedPiece != NULL && singleMovePiece(x, y, SelectedPiece, RedPieces, WhitePieces, &turn)) {
+                selected = false;
+                SelectedPiece = NULL;
+            }
+            else if (SelectedPiece != NULL && attackMovePiece(x, y, SelectedPiece, RedPieces, WhitePieces, &turn)) {
                 selected = false;
                 SelectedPiece = NULL;
             }

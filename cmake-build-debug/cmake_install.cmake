@@ -1,4 +1,4 @@
-# Install script for directory: /home/alisson/CLionProjects/Proyecto2_Inmersive_Checkers
+# Install script for directory: /home/greivin/CLionProjects/Inmersive_Checkers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/alisson/CLionProjects/Proyecto2_Inmersive_Checkers/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/greivin/CLionProjects/Inmersive_Checkers/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

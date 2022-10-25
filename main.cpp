@@ -10,7 +10,7 @@ class Board {
 public:
     int size = 8;
 
-    //Funcion en la que se crea el tablero
+    //Funcion que dibuja el tablero
     void Draw(sf::RenderWindow& window) {
         sf::RectangleShape tile;
         tile.setSize(sf::Vector2f(75.f, 75.f));
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    //En esta funcion se indica la casilla que se esta seleccionando
+    //Funcion que indica la casilla  seleccionada
     void Highlight(sf::RenderWindow& window, int x, int y) {
         sf::RectangleShape tile;
         tile.setSize(sf::Vector2f(75.f, 75.f));
@@ -48,6 +48,7 @@ public:
     bool isKing = false;
     sf::Color color;
 
+    //Funcion que dibuja las piezas
     void Draw(sf::RenderWindow& window) {
         if (isAlive) {
             sf::CircleShape shape(radius);
@@ -62,6 +63,22 @@ public:
     }
 };
 
+class Path {
+public:
+    Piece frompiece;
+    int xto;
+    int yto;
+    bool empty = true;
+};
+
+//Funcion que asigna atributos a un objeto Path
+void Setpath(Path path,Piece* from,int x,int y){
+    path.frompiece=*from;
+    path.xto=x;
+    path.yto=y;
+    path.empty = false;
+}
+//Funcion que asigna atributos a un objeto Piece
 void Setup(sf::RenderWindow& window, Piece* RedPieces, Piece* WhitePieces) {
     int m = 0;
     for (int i = 0;i < 3;i++) {
@@ -85,6 +102,7 @@ void Setup(sf::RenderWindow& window, Piece* RedPieces, Piece* WhitePieces) {
     }
 }
 
+//Funcion que encuentra una pieza
 Piece* FindPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces) {
     for (int i = 0; i < 12;i++) {
         if (RedPieces[i].x == x && RedPieces[i].y == y) {
@@ -101,6 +119,7 @@ Piece* FindPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces) {
     return NULL;
 }
 
+//Funcion que elimina una pieza
 void KillPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces, int *turn) {
     FindPiece(x, y, RedPieces, WhitePieces)->isAlive = false;
     *turn = ((*turn == 1) ? 2 : 1);
@@ -110,8 +129,6 @@ void KillPiece(int x, int y, Piece* RedPieces, Piece* WhitePieces, int *turn) {
 //Funcion de un solo movimiento
 int singleMovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn) {
     if (s_Piece->color == sf::Color::Red || s_Piece->color == sf::Color::White && s_Piece->isKing) {
-
-        //Movimiento simple
         if (x == s_Piece->x - 1 && y == s_Piece->y - 1) {
             if (!FindPiece(x, y, RedPieces, WhitePieces)) {
                 *turn = ((*turn == 1) ? 2 : 1);
@@ -193,19 +210,124 @@ int attackMovePiece(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* White
     }
     return 0;
 }
-
-//Funcion para el AI
-//Piesas rojas jugador
-//Piesas blancas AI
-int bestmoveAI(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces, int *turn){
-
-    Piece* Possibilities = WhitePieces;
-    Piece* searchedPossibilities {};
-
-    while (Possibilities != searchedPossibilities){
-
+//Funcion que comprueba si el ataque del AI es valido
+bool checkattackAI(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces) {
+    if (s_Piece->color == sf::Color::White && s_Piece->isKing) {
+        if (x == s_Piece->x - 2 && y == s_Piece->y - 2 || x == s_Piece->x + 2 && y == s_Piece->y - 2) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces) && FindPiece(x + 1,y + 1,RedPieces, WhitePieces) != NULL && FindPiece(x + 1, y + 1, RedPieces, WhitePieces)->color != s_Piece->color) {
+                return true;
+            }
+        }
     }
+    if (s_Piece->color == sf::Color::White) {
+        if (x == s_Piece->x - 2 && y == s_Piece->y + 2 || x == s_Piece->x + 2 && y == s_Piece->y + 2) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces) && FindPiece(x + 1, y - 1, RedPieces, WhitePieces) != NULL && FindPiece(x + 1, y - 1, RedPieces, WhitePieces)->color != s_Piece->color) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+//Funcion que comprueba si el movimiento del AI es valido
+bool checkmoveAI(int x, int y, Piece* s_Piece, Piece* RedPieces, Piece* WhitePieces) {
+    if (s_Piece->color == sf::Color::White && s_Piece->isKing) {
+        if (x == s_Piece->x - 1 && y == s_Piece->y - 1 || x == s_Piece->x + 1 && y == s_Piece->y - 1) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
+                return true;
+            }
+        }
+    }
+    if (s_Piece->color == sf::Color::White) {
+        if (x == s_Piece->x - 1 && y == s_Piece->y + 1 || x == s_Piece->x + 1 && y == s_Piece->y + 1) {
+            if (!FindPiece(x, y, RedPieces, WhitePieces)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+//(Piezas rojas jugador y Piezas blancas AI)
+//Funcion para encontrar un ataque para el AI
+Path bestattackAI(Path PATH,Piece* RedPieces, Piece* WhitePieces){
+    Piece* s_p = NULL;
+    Piece* best_p = NULL;
+    int bestx = 0;
+    int besty = 0;
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++){
+            if (FindPiece(i, j, RedPieces, WhitePieces) && FindPiece(i, j, RedPieces, WhitePieces)->color == sf::Color::White){
+                s_p = FindPiece(i, j, RedPieces, WhitePieces);
+                int a,b = (s_p->x+2,s_p->y+2);
+                int c,d = (s_p->x-2,s_p->y+2);
+                int e,f = (s_p->x-2,s_p->y-2);
+                int g,h = (s_p->x+2,s_p->y-2);
+
+                if (checkattackAI(a, b, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = a;
+                    besty = b;
+                }else if (checkattackAI(c, d, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = c;
+                    besty = d;
+                }else if (checkattackAI(e, f, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = e;
+                    besty = f;
+                }else if (checkattackAI(g, h, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = g;
+                    besty = h;
+                }
+            }
+        }
+    }
+    if (best_p!=NULL){
+        Setpath(PATH,best_p,bestx,besty);
+    }
+    return  PATH;
+}
+
+//Funcion para encontrar un movimiento para el AI
+Path bestsinglemoveAI(Path PATH, Piece* RedPieces, Piece* WhitePieces){
+    Piece* s_p = NULL;
+    Piece* best_p = NULL;
+    int bestx = 0;
+    int besty = 0;
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++){
+            if (FindPiece(i, j, RedPieces, WhitePieces) && FindPiece(i, j, RedPieces, WhitePieces)->color == sf::Color::White){
+                s_p = FindPiece(i, j, RedPieces, WhitePieces);
+                int a,b = (s_p->x+1,s_p->y+1);
+                int c,d = (s_p->x-1,s_p->y+1);
+                int e,f = (s_p->x-1,s_p->y-1);
+                int g,h = (s_p->x+1,s_p->y-1);
+
+                if (checkmoveAI(a, b, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = a;
+                    besty = b;
+                }else if (checkmoveAI(c, d, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = c;
+                    besty = d;
+                }else if (checkmoveAI(e, f, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = e;
+                    besty = f;
+                }else if (checkmoveAI(g, h, s_p, RedPieces, WhitePieces)){
+                    best_p = s_p;
+                    bestx = g;
+                    besty = h;
+                }
+            }
+        }
+    }
+    if (best_p!=NULL){
+        Setpath(PATH,best_p,bestx,besty);
+    }
+    return PATH;
 }
 
 int main()
@@ -220,6 +342,9 @@ int main()
     Piece WhitePieces[12];
     bool selected = false;
     Piece* SelectedPiece = NULL;
+    Path* defaultpath = NULL;
+    Path testattack;
+    Path testmove;
     int turn = 1;
 
     for (int i = 0;i < 12;i++) {
@@ -256,6 +381,20 @@ int main()
             RedPieces[i].Draw(window);
         }
 
+        //jugada del AI
+        //if (!selected && turn==2) {
+        if (testattack.empty && testmove.empty && turn==2) {
+            testattack= bestattackAI(testattack,RedPieces,WhitePieces);
+            testmove= bestsinglemoveAI(testmove,RedPieces,WhitePieces);
+            if (testattack.empty){
+                singleMovePiece(testmove.xto, testmove.yto, &testmove.frompiece, RedPieces, WhitePieces, &turn);
+                testmove.empty= true;
+            }
+            attackMovePiece(testattack.xto, testattack.yto, &testattack.frompiece, RedPieces, WhitePieces, &turn);
+            testattack.empty= true;
+            testmove.empty= true;
+        }
+
         if (selected) {
             int x = sf::Mouse::getPosition(window).x / 75;
             int y = sf::Mouse::getPosition(window).y / 75;
@@ -266,7 +405,6 @@ int main()
                 else {
                     SelectedPiece = FindPiece(x, y, RedPieces, WhitePieces);
                 }
-
                 selected = false;
             }
             else if (SelectedPiece != NULL && singleMovePiece(x, y, SelectedPiece, RedPieces, WhitePieces, &turn)) {
@@ -277,8 +415,10 @@ int main()
                 selected = false;
                 SelectedPiece = NULL;
             }
+           // else if (SelectedPiece != NULL && );
             selected = false;
         }
+
         for (int i = 0;i < 12;i++) {
             if (RedPieces[i].y == 0) {
                 RedPieces[i].isKing = true;
@@ -287,7 +427,6 @@ int main()
                 WhitePieces[i].isKing = true;
             }
         }
-
 
         window.display();
     }

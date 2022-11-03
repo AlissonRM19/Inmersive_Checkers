@@ -28,8 +28,8 @@ Checkers::Checkers() {}
 void Checkers::start()
 {
 	// constant strings
-	const string RESOURCE_ERROR_IMAGE = "ERROR - cannot open \"/home/alisson/CLionProjects/checkers/resources/Checkerboard_8x8_125px.png\"";
-	const string RESOURCE_ERROR_FONT = "ERROR - cannot open \"/home/alisson/CLionProjects/checkers/resources/ENGR.TTF\"";
+	const string RESOURCE_ERROR_IMAGE = "ERROR - cannot open \"/resources/Checkerboard_8x8_125px.png\"";
+	const string RESOURCE_ERROR_FONT = "ERROR - cannot open \"/resources/ENGR.TTF\"";
 	const string TITLE = "_CHECKERS_";
 	const string MAIN_MENU =
 		"Press 'C' for Players verses Computer\n"
@@ -45,14 +45,14 @@ void Checkers::start()
 	
 	// load an image to use as an icon on the titlebar
 	sf::Image image;
-	if(!image.loadFromFile("/home/alisson/CLionProjects/checkers/resources/Checkerboard_8x8_125px.png"))
+	if(!image.loadFromFile("/home/greivin/CLionProjects/Inmersive_Checkers/resources/Checkerboard_8x8_125px.png"))
 		cerr << RESOURCE_ERROR_IMAGE << endl;
 	// Vector out of range error
 	//window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 	
 	// load the text font
 	sf::Font font;
-	if(!font.loadFromFile("/home/alisson/CLionProjects/checkers/resources/ENGR.TTF"))
+	if(!font.loadFromFile("/home/greivin/CLionProjects/Inmersive_Checkers/resources/ENGR.TTF"))
 		cerr << RESOURCE_ERROR_FONT << endl;
 	
 	// initialize menu fonts

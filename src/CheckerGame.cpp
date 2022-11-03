@@ -18,7 +18,7 @@ CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const b
 	//SoundManager::getSoundManager()->addSound("../resources/slime_jump.ogg");
 	//SoundManager::getSoundManager()->addSound("../resources/bonus.ogg");
 	p1 = new Player (1, isHuman1); // create player 1
-	//p2 = new Player (2, isHuman2); // create player 2
+	p2 = new Player (2, isHuman2); // create player 2
 }
 
 CheckerGame::~CheckerGame()
@@ -27,15 +27,15 @@ CheckerGame::~CheckerGame()
 	delete checkerboard;
 	checkerboard = nullptr;
 	delete p1;
-	//delete p2;
+	delete p2;
 	p1 = nullptr;
-	//p2 = nullptr;
+	p2 = nullptr;
 }
 
 void CheckerGame::startCheckers(sf::RenderWindow& window, sf::Event& event)
 {
 	p1->setTurn(true); // p1 starts game 
-	//p2->setTurn(false);
+	p2->setTurn(false);
 	createTeams();
 	isPlaying = true;
 	// start the checker game loop
@@ -101,7 +101,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 						printChecker(p2->getChecker(currentIndex), "MOVING");
 						changeTurn(); // change to player 1 turn
 						selecting = true;
-						SoundManager::getSoundManager()->playSound(SOUND_MOVE);
+						//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 					}
 				}
 				else if(coords.size() == 6) // jumpByChecker
@@ -127,7 +127,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 						deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
 						changeTurn(); // change to player 1 turn
 						selecting = true;
-						SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
+						//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 					}
 				}
 			}
@@ -269,7 +269,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p2, p2->findCheckerIndex(futureSquare));
 											checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
 											changeTurn();
-											SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
+											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 										}
 										// Check if the player is jumping by selecting the square to land on after a jump (future square in this case), temp square is in the middle
 										else if(Moveable::jumpBySquare(p1->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex)) 
@@ -287,7 +287,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p2, p2->findCheckerIndex(tempSquare));
 											checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
 											changeTurn();
-											SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
+											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
 										}
 										// finally check for moving w/o jump
 										else if(Moveable::moveable(p1->getCheckersVector(), currentSquare, futureSquare, currentIndex) && !futureSquare->getOccupied()) 
@@ -307,7 +307,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 												printChecker(p1->getChecker(currentIndex), "MOVING");
 												checkDoubleJump = false;
 												changeTurn();
-												SoundManager::getSoundManager()->playSound(SOUND_MOVE);
+												//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 											}
 										}
 
@@ -344,7 +344,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
 											checkDoubleJump = true;
 											changeTurn();
-											SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
+											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 										}	
 										else if(Moveable::jumpBySquare(p2->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex)) 
 										{
@@ -357,7 +357,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p1, p1->findCheckerIndex(tempSquare));
 											checkDoubleJump = true;
 											changeTurn();
-											SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
+											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
 										}
 										else if(Moveable::moveable(p2->getCheckersVector(), currentSquare, futureSquare, currentIndex) && !futureSquare->getOccupied()) 
 										{
@@ -370,7 +370,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 												printChecker(p2->getChecker(currentIndex), "MOVING");
 												checkDoubleJump = false;
 												changeTurn();
-												SoundManager::getSoundManager()->playSound(SOUND_MOVE);
+												//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 											}
 										}
 
@@ -429,7 +429,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 void CheckerGame::changeTurn()
 {
 	p1->setTurn(!p1->getTurn());
-	//p2->setTurn(!p2->getTurn());
+	p2->setTurn(!p2->getTurn());
 }
 
 // create the teams
@@ -503,7 +503,7 @@ bool CheckerGame::playerCannotMove(Player*& p1, Player*& p2, Checkerboard*& chec
 }
 
 // handles the game state, modifies the class variable 'isPlaying'
-void CheckerGame::handleGameState(sf::Clock& clock)
+/*void CheckerGame::handleGameState(sf::Clock& clock)
 {
 	// tied
 	if(p1->getCounter() == p2->getCounter()) 
@@ -540,7 +540,7 @@ void CheckerGame::handleGameState(sf::Clock& clock)
 
 	}
 }
-
+*/
 // determine if the active player is a human
 bool CheckerGame::isActivePlayerHuman()
 {
@@ -584,7 +584,7 @@ void CheckerGame::ifCheckerKinged(Checkerpiece* checker, Square* square)
 		|| (square->getRow() == KING_ROW_7 && checker->getKingRow() == KING_ROW_7))
 	{
 		checker->setKing(true); // update the checker to be a king
-		SoundManager::getSoundManager()->playSound(SOUND_KING);
+		//SoundManager::getSoundManager()->playSound(SOUND_KING);
 	}
 }
 

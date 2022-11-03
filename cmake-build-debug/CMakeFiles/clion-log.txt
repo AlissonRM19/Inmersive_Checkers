@@ -1,5 +1,7 @@
 /home/greivin/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.4167.35/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /home/greivin/CLionProjects/Inmersive_Checkers -B /home/greivin/CLionProjects/Inmersive_Checkers/cmake-build-debug
--- Found SFML 2.5.1 in /usr/lib/x86_64-linux-gnu/cmake/SFML
+Proyecto2_Inmersive_Checkers PROYECTO2_INMERSIVE_CHECKERS
+-- Found SFML 2.5 in /usr/include
+/usr/lib/x86_64-linux-gnu/libsfml-system.so/usr/lib/x86_64-linux-gnu/libsfml-window.so/usr/lib/x86_64-linux-gnu/libsfml-graphics.so/usr/lib/x86_64-linux-gnu/libsfml-audio.so
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/greivin/CLionProjects/Inmersive_Checkers/cmake-build-debug

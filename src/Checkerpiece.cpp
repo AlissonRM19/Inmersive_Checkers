@@ -42,32 +42,16 @@ const int Checkerpiece::getPlayer()
 	return player;
 }
 
-int Checkerpiece::getRank()
-{
-	return rank;
-}
-
 // setters
 void Checkerpiece::setKing(bool isKing)
 {
 	this->isKing = isKing;
 }
 
-void Checkerpiece::setRank(int rank)
-{
-	this->rank = rank;
-}
-
 // draw the checkerpieces to the SFML window
 void Checkerpiece::drawCheckers(sf::RenderWindow& window, const vector<Checkerpiece*>& checkers)
 {
 	sf::CircleShape circle;
-	/*
-	sf::Texture crownTexture;
-	// for drawing a crown to represent a kinged checker
-	if(!crownTexture.loadFromFile("resources/Crown.png"))
-		std::cout << EXIT_FAILURE << std::endl;
-	*/
 
 	// only draw checkers if the container is not empty
 	if(!checkers.empty())
@@ -84,19 +68,16 @@ void Checkerpiece::drawCheckers(sf::RenderWindow& window, const vector<Checkerpi
 		{
 			circle.setPosition((*it)->getPosition().x, (*it)->getPosition().y);
 			circle.setFillColor((*it)->getFillColor());
-			if((*it)->getKing()) 
-			{
-				//circle.setTexture(&crownTexture);
+			if((*it)->getKing())
+            {
 				circle.setOutlineThickness(-10);
 				circle.setOutlineColor(sf::Color::Yellow);
 			}
 			else
-			{
-				//circle.setTexture(nullptr);
+            {
 				circle.setOutlineThickness(0);
 				circle.setOutlineColor(sf::Color(0, 0, 0, 255));
 			}
-			
 			window.draw(circle);
 		}
 	}

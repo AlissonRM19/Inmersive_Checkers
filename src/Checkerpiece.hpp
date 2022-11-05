@@ -1,12 +1,7 @@
 /*
 *	The checkerpiece class represents the checkers. 
 *	Each team starts with 12 checkerpieces. This class handles drawing to checkerboard (called within CheckerGame.cpp),
-*	and construction of checkerpieces. Checkerpieces have a rank (#'s 0-4), the ranking system is as follows:
-*			0) Checker can't move at all.
-*			1) Checker can only move.
-*			2) Checker can move and become a king.
-*			3) Checker can jump.
-*			4) Checker can double jump.
+*	and construction of checkerpieces.
 *	The actual checkerpieces are managed in the Player class (each player has a vector container).
 */
 
@@ -25,7 +20,6 @@ protected:
 	const int startingRow;
 	const int kingRow;
 	const int player;
-	int rank;
 	bool isKing;
 public:
 	Checkerpiece(); // dummy constructor for drawing object in CheckerGame class
@@ -35,13 +29,13 @@ public:
 
 	// setters
 	void setKing(bool);
-	void setRank(int);
+	//void setRank(int);
 	// getters
 	bool getKing();
 	const int getKingRow();
 	const int getStartingRow();
 	const int getPlayer();
-	int getRank();
+	//int getRank();
 };
 
 #endif

@@ -41,48 +41,6 @@ void Checkerboard::initSquareArray()
 }
 
 /*
-*	Initializes an 8 by 8 square grid with an arbitrarily colored checkered pattern.
-*	This version of drawGrid does not support nice magenta highlight, 
-*	but it has a nice green highlight when a square is mouse-overed.
-*/
-void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseOverY)
-{
-	int startingX = 0, startingY = 0;
-
-	for(int i = 0; i < SQUARES_VERTICAL; ++i)
-	{	
-		for(int j = 0; j < SQUARES_HORIZONTAL; ++j)
-		{
-			if((j % 2 == 0 && i % 2 == 0) || (j % 2 != 0 && i % 2 != 0))
-				squareArray[i][j]->setFillColor(sf::Color::White); 
-			else
-				squareArray[i][j]->setFillColor(sf::Color::Black); 
-			
-			// erase any previous green square highlight
-			squareArray[i][j]->setOutlineThickness(0);
-			squareArray[i][j]->setOutlineColor(sf::Color(0, 0, 0, 255));
-
-			// find the square in the array that a player is currently mousing over (have to use long version instead of the offset because the offset keeps changing)
-			if(squareArray[i][j] == findSquare(mouseOverX, mouseOverY))
-			{
-				// give it a nice green square highlight
-				squareArray[i][j]->setOutlineThickness(-SQUARES_VERTICAL);
-				squareArray[i][j]->setOutlineColor(sf::Color::Green);	
-			}
-
-			squareArray[i][j]->setPosition(static_cast<float>(startingX), static_cast<float>(startingY)); // set the position for drawing
-			squareArray[i][j]->setSize(sf::Vector2f(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET)));
-			window.draw(*squareArray[i][j]); // performs the actual drawing of the checkerboard square
-
-			startingX += XOFFSET;
-		}
-
-		startingY += YOFFSET;
-		startingX = 0; // reset startingX to the far left (0, y).
-	}
-}
-
-/*
 *	Draws an 8 by 8 square grid with checkered color pattern and also highlights the current square (green) and a mouseover square (magenta).
 *	The current and mouseOver values come from the CheckerGame, based upon where the player is pointing @ the board.
 */

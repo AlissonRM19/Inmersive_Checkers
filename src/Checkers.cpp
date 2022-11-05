@@ -29,13 +29,13 @@ void Checkers::start()
 {
 	// constant strings
 	const string RESOURCE_ERROR_IMAGE = "ERROR - cannot open \"/resources/Checkerboard_8x8_125px.png\"";
-	const string RESOURCE_ERROR_FONT = "ERROR - cannot open \"/resources/ENGR.TTF\"";
+	const string RESOURCE_ERROR_FONT = "ERROR - cannot open \"/resources/Monterey.ttf\"";
 	const string TITLE = "_CHECKERS_";
 	const string MAIN_MENU =
-		"Press 'C' for Players verses Computer\n"
-        "Press 'R' for the Rules";
-	const string RULES = "See the Checker_Rules.txt files in resources.";
-	//const string VIEW_TIMES = "View Fastest Times (in minutes) selected, Main Screen";
+		"Press 'C' for 1 PLayer Game\n"
+        "Press 'P' for 2 Players Game\n"
+        "Press 'ESCAPE' to close the window or\n"
+        "in game to return to menu";
 
 	// setup the window (give dimensions, followed by a window title, and the default format)
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE, sf::Style::Default);
@@ -52,19 +52,19 @@ void Checkers::start()
 	
 	// load the text font
 	sf::Font font;
-	if(!font.loadFromFile("/home/greivin/CLionProjects/Inmersive_Checkers/resources/ENGR.TTF"))
+	if(!font.loadFromFile("/home/greivin/CLionProjects/Inmersive_Checkers/resources/Monterey.ttf"))
 		cerr << RESOURCE_ERROR_FONT << endl;
 	
 	// initialize menu fonts
 	sf::Text menuMessage, menuTitle;
 	menuTitle.setFont(font);
-	menuTitle.setCharacterSize(WINDOW_WIDTH / 40);
+	menuTitle.setCharacterSize(WINDOW_WIDTH / 25);
 	menuTitle.setPosition(0, 0); // draw @ top-left corner of window
 	menuTitle.setColor(sf::Color::Red);
 	menuTitle.setString(TITLE);
 	menuMessage.setFont(font);
-	menuMessage.setCharacterSize(WINDOW_WIDTH / 40);
-	menuMessage.setPosition(0, WINDOW_HEIGHT / 40); // draw slightly below the title
+	menuMessage.setCharacterSize(WINDOW_WIDTH / 25);
+	menuMessage.setPosition(0, WINDOW_HEIGHT / 25); // draw slightly below the title
 	menuMessage.setColor(sf::Color::Black);
 	menuMessage.setString(MAIN_MENU);
 	
@@ -80,27 +80,16 @@ void Checkers::start()
 			{
 				window.close();
 			}
-			/*else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::P)) // human verses human
-			{
-				CheckerGame checkerGame(window, true, true); // both players are human
-				checkerGame.startCheckers(window, event);
-			}*/
+			else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::P)) // human verses human
+            {
+                CheckerGame checkerGame(window, true, true); // both players are human
+                checkerGame.startCheckers(window, event);
+            }
 			else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::C)) // human verses computer
 			{
 				CheckerGame checkerGame(window, true, false); // only player 1 is human
 				checkerGame.startCheckers(window, event);
 			}
-			else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::R)) // Rules is selected
-			{
-				cout << RULES << endl;
-			}
-            /*
-			else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::T)) // view best scores is selected
-			{
-				cout << VIEW_TIMES << endl;
-				loadTimes(window, event);
-			}*/
-
 			else if (event.type == sf::Event::MouseMoved)
 			{
 				// saves these coordinates and draws a nice green or purple box around the closest moused over square on the checkerboard.
@@ -118,69 +107,6 @@ void Checkers::start()
 	} // end of window.isOpen()
 }
 
-/* load the fastest 10 scores from external file storage */
-/*void Checkers::loadTimes(sf::RenderWindow& window, sf::Event& event)
-{
-	const string RESOURCE_ERROR_SAV = "ERROR - cannot open \"game_times.sav\"";
-	ifstream file("game_times.sav"); // open the file for reading
-	if(!file)
-		cerr << RESOURCE_ERROR_SAV << endl;
-	else
-	{
-		int i = 0;
-		string temp;
-		vector<string> times;
-		times.push_back(temp);
-		while(i < 10 && file >> temp)
-		{
-			++i;
-			temp += "\n"; // append a newline to the time
-			times.push_back(temp);
-			// cout << temp << endl;
-		}			
-
-		// load the text font
-		sf::Font font;
-		if(!font.loadFromFile("/home/alisson/CLionProjects/checkers/resources/ENGR.TTF"))
-			cerr << "ERROR - cannot find resource file ENGR.TTF" << endl;
-		sf::Text text;
-		text.setFont(font);
-		text.setCharacterSize(WINDOW_WIDTH / 40);
-		text.setPosition(0, WINDOW_HEIGHT / 40); // draw slightly below the title
-		text.setColor(sf::Color::Black);
-		// now sort the times in non-decreasing order
-		sort(times.begin(), times.end());
-		// reset temp
-		temp = "Press ESC to go back to Main Menu!\n\n\n"
-			"Top 10 Fastest Times:\n\n";
-		vector<string>::const_iterator it;
-		for(it = times.begin(); it != times.end(); ++it)
-			temp += *it;
-		// set the text to temp
-		text.setString(temp);
-
-		// this loop keeps the top 10 best scores on the window
-		bool view = true;
-		while(view)
-		{
-			while(window.pollEvent(event))
-			{
-				// go back to the main menu
-				if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
-				{
-					cout << endl << "Closing Fastest Times View. Returning to Main Menu." << endl;
-					view = false;
-				}
-		
-				// SFML drawing sequence
-				window.clear(sf::Color::White);
-				window.draw(text); // draw the times and header
-				window.display();
-			}
-		}
-	}
-}
-*/
 /* create a fun little animation on the main menu (sort of like showing a game in progress) */
 void Checkers::animation(sf::RenderWindow& window, const int& mouseOverX, const int& mouseOverY)
 { 

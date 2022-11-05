@@ -6,17 +6,12 @@ using std::endl;
 using std::string;
 using std::ostringstream;
 
-//sf::Time CheckerGame::timeElapsed;
 int CheckerGame::winner = 0; // no winner at initialization
 
 CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const bool& isHuman2)
 {
 	isPlaying = false; // game loop boolean
 	checkerboard = new Checkerboard(window); // create a new checkerboard
-	//SoundManager::getSoundManager()->addSound("../resources/step.ogg");
-	//SoundManager::getSoundManager()->addSound("../resources/big_wall_impact.ogg");
-	//SoundManager::getSoundManager()->addSound("../resources/slime_jump.ogg");
-	//SoundManager::getSoundManager()->addSound("../resources/bonus.ogg");
 	p1 = new Player (1, isHuman1); // create player 1
 	p2 = new Player (2, isHuman2); // create player 2
 }
@@ -45,7 +40,6 @@ void CheckerGame::startCheckers(sf::RenderWindow& window, sf::Event& event)
 // checker game loop (game state: tied, p1 up, p2 up, p1 wins, p2 wins)
 void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 {
-	//sf::Clock clock; // start the clock
 	int currentX = 0, currentY = 0; // the current coordinates of a player's selection
 	int futureX = 0, futureY = 0; // used after a player selects a checker and wants to move / jump
 	int mouseOverX = 0, mouseOverY = 0; // used for creating the green and purple checker square highlighting
@@ -61,10 +55,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 
 	while(isPlaying) // gameplay continues until there is a winner, tie, or the window is terminated.
 	{
-		/* At the beginning of the turn, check to see if the player can move any checkers
-		 NOT CURRENTLY TESTED */
-		//if(playerCannotMove(p1, p2, checkerboard))
-			//std::cout << "No moveable checkers." << std::endl;
 /************************************************************* AI MOVEMENTS ******************************************/
 		if(p2->getTurn() && !p2->getIsHuman()) // player 2 is AI and this is their turn
 		{
@@ -101,7 +91,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 						printChecker(p2->getChecker(currentIndex), "MOVING");
 						changeTurn(); // change to player 1 turn
 						selecting = true;
-						//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 					}
 				}
 				else if(coords.size() == 6) // jumpByChecker
@@ -127,7 +116,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 						deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
 						changeTurn(); // change to player 1 turn
 						selecting = true;
-						//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 					}
 				}
 			}
@@ -269,7 +257,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p2, p2->findCheckerIndex(futureSquare));
 											checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
 											changeTurn();
-											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 										}
 										// Check if the player is jumping by selecting the square to land on after a jump (future square in this case), temp square is in the middle
 										else if(Moveable::jumpBySquare(p1->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex)) 
@@ -287,7 +274,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p2, p2->findCheckerIndex(tempSquare));
 											checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
 											changeTurn();
-											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
 										}
 										// finally check for moving w/o jump
 										else if(Moveable::moveable(p1->getCheckersVector(), currentSquare, futureSquare, currentIndex) && !futureSquare->getOccupied()) 
@@ -307,7 +293,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 												printChecker(p1->getChecker(currentIndex), "MOVING");
 												checkDoubleJump = false;
 												changeTurn();
-												//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 											}
 										}
 
@@ -344,7 +329,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
 											checkDoubleJump = true;
 											changeTurn();
-											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
 										}	
 										else if(Moveable::jumpBySquare(p2->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex)) 
 										{
@@ -357,7 +341,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 											deleteCheckerFromGame(p1, p1->findCheckerIndex(tempSquare));
 											checkDoubleJump = true;
 											changeTurn();
-											//SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
 										}
 										else if(Moveable::moveable(p2->getCheckersVector(), currentSquare, futureSquare, currentIndex) && !futureSquare->getOccupied()) 
 										{
@@ -370,7 +353,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 												printChecker(p2->getChecker(currentIndex), "MOVING");
 												checkDoubleJump = false;
 												changeTurn();
-												//SoundManager::getSoundManager()->playSound(SOUND_MOVE);
 											}
 										}
 
@@ -413,7 +395,6 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 			}
 		} // end of window events loop
 
-		//handleGameState(clock); // check the game state
 		activePlayerIsHuman = isActivePlayerHuman(); // determine if the active player is human
 
 		// SFML window drawing sequence
@@ -472,75 +453,6 @@ bool CheckerGame::playerHasToJump(Player*& active, Player*& notActive)
 	return false;
 }
 
-/* 
-*	Determines whether the active player can move any of their checkers.
-*	Uses an AI to find a current move for the player (-1 means their is no current move).
-*/
-bool CheckerGame::playerCannotMove(Player*& p1, Player*& p2, Checkerboard*& checkerboard)
-{
-	if(p1->getTurn() == true)
-	{
-		AI ai;
-		if(ai.getCurrentMoveIndex(p1, p2, checkerboard) == -1)
-		{
-			p1->deleteAllCheckers();
-			return true;
-		}
-		else
-			return false;
-	}
-	else
-	{
-		AI ai;
-		if(ai.getCurrentMoveIndex(p2, p1, checkerboard) == -1)
-		{
-			p2->deleteAllCheckers();
-			return true;
-		}
-		else
-			return false;
-	}
-}
-
-// handles the game state, modifies the class variable 'isPlaying'
-/*void CheckerGame::handleGameState(sf::Clock& clock)
-{
-	// tied
-	if(p1->getCounter() == p2->getCounter()) 
-	{
-	}
-	// player 2 wins
-	else if(p1->getCounter() == 0) 
-	{
-		isPlaying = false;
-		std::cout << std::endl << "Player Two Wins " << std::endl;
-		winner = p2->getNumber();
-		CheckerGame::timeElapsed = clock.restart(); // get the length of the game
-		std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
-		saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // save the time to external storage
-	}
-	// player 1 wins
-	else if(p2->getCounter() == 0)
-	{
-		isPlaying = false;
-		std::cout << std::endl << "Player One Wins " << std::endl;
-		winner = p1->getNumber();
-		CheckerGame::timeElapsed = clock.restart(); // get the length of the game
-		std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
-		saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // save the time to external storage
-	}
-	// p2 leads
-	else if(p1->getCounter() < p2->getCounter()) 
-	{
-	
-	}
-	// p1 leads
-	else if(p1->getCounter() > p2->getCounter())
-	{
-
-	}
-}
-*/
 // determine if the active player is a human
 bool CheckerGame::isActivePlayerHuman()
 {
@@ -584,25 +496,9 @@ void CheckerGame::ifCheckerKinged(Checkerpiece* checker, Square* square)
 		|| (square->getRow() == KING_ROW_7 && checker->getKingRow() == KING_ROW_7))
 	{
 		checker->setKing(true); // update the checker to be a king
-		//SoundManager::getSoundManager()->playSound(SOUND_KING);
 	}
 }
 
-// save the time
-/*void CheckerGame::saveTime(const double& time)
-{
-	std::cout << "Saving the time to game_times.sav" << std::endl;
-	std::ofstream file("game_times.sav", std::ios::app); // name the file to save to (make sure to append)
-	if(!file)
-		std::cerr << "File won't open." << std::endl;
-	else
-	{
-		file << time; // save the time to the file
-		file << "\n"; // add a newline
-		file.close(); // close the file
-	}
-}
-*/
 /* Show the winner on the SFML window after game ends */
 void CheckerGame::showWinner(sf::RenderWindow& window, sf::Event& event)
 {
@@ -611,7 +507,7 @@ void CheckerGame::showWinner(sf::RenderWindow& window, sf::Event& event)
 	const string winnerText = ostr.str(); // convert ostr to string and save it
 	// load the text font
 	sf::Font font;
-	if(!font.loadFromFile("resources/ENGR.TTF"))
+	if(!font.loadFromFile("resources/Monterey.ttf"))
 		cerr << "ERROR - cannot load resources" << endl;
 	sf::Text text;
 	text.setFont(font);

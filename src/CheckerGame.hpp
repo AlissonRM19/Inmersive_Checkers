@@ -13,8 +13,8 @@
 *	5) A pawn can become a king by traversing from its starting row towards the farthest row opposite of the starting row on the starting board.
 *	6) Last team standing wins.
 *
-*	It is assumed that only two players are playing at a time (it could be two humans or even two computers!).
-*	At the moment, player one is red, and player two is yellow. In the future, it will be randomized or customizeable.
+*	It is assumed that only two players are playing at a time.
+*	At the moment, player one is red, and player two is blue.
 *	The checkers vector maintains an index of the checker that's in play. It should be consistent throughout the code for each turn.
 */
 
@@ -39,7 +39,6 @@ class CheckerGame
 {
 private:
 	bool isPlaying; // used to keep track of the state of the game
-	//static sf::Time timeElapsed; // time elapsed from most recent checkers game
 	static int winner; // winner of the most recent game (0 if there's no winner)
 	Checkerboard* checkerboard;
 	Checkerpiece cpDrawer;
@@ -47,17 +46,14 @@ private:
 	Player* p2;
 
 	bool playerHasToJump(Player*&, Player*&);
-	bool playerCannotMove(Player*&, Player*&, Checkerboard*&);
 	void gameLoop(sf::RenderWindow&, sf::Event&);
 	void showWinner(sf::RenderWindow&, sf::Event&);
 	void createTeams();
 	void changeTurn();
-	//void handleGameState(sf::Clock&);
 	bool isActivePlayerHuman();
 	void printChecker(Checkerpiece*, const std::string&);
 	void deleteCheckerFromGame(Player*, const int&); 
 	void ifCheckerKinged(Checkerpiece*, Square*);
-	//void saveTime(const double&);
 public:
 	CheckerGame(sf::RenderWindow&, const bool&, const bool&);
 	~CheckerGame();

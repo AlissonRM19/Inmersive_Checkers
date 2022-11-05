@@ -28,7 +28,6 @@
 class Checkers
 {
 private:
-	//void loadTimes(sf::RenderWindow&, sf::Event&);
 	void animation(sf::RenderWindow&, const int&, const int&);
 public:
 	Checkers();

@@ -29,7 +29,6 @@ public:
 	Square* findSquare(int);
 	Square* findJumpOntoSquare(Square*, int);
 	Square* findIntermSquare(Square*, int);
-	void drawGrid(sf::RenderWindow&, int, int);
 	void drawGrid(sf::RenderWindow&, int, int, int, int, bool);
 	void printTheSquares();
 	void initSquareArray();

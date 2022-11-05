@@ -20,13 +20,5 @@ const int WINDOW_POSITION_X = 0; // the vertical position of the window when it 
 const int WINDOW_POSITION_Y = 0; // the horizontal position of the window when it is created
 const std::string WINDOW_TITLE = "Checkers";
 
-/*
-enum sound_resources 
-{
-	SOUND_MOVE,
-	SOUND_JUMP_CHECKER,
-	SOUND_JUMP_SQUARE,
-	SOUND_KING
-};*/
 
 #endif

@@ -1,3 +1,4 @@
+
 #include "Square.hpp"
 
 Square :: Square(const sf::Vector2f& area, int row, int col, int idNumber) 
@@ -14,7 +15,6 @@ Square :: ~Square()
 	
 }
 
-// getters
 bool Square :: getOccupied()
 {
 	return occupied;
@@ -35,7 +35,6 @@ const int Square :: getIdNumber()
 	return idNumber;
 }
 
-// setters
 void Square :: setOccupied(bool occupied)
 {
 	this->occupied = occupied;

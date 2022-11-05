@@ -1,13 +1,15 @@
+
 #include "Checkerpiece.hpp"
 
 using std::vector;
 
+// Contructor para el dibujar el tablero llamado en CheckersGame
 Checkerpiece::Checkerpiece()
 	: startingRow(0),
 	kingRow(0),
 	player(0)
 {
-	// This is a dummy constructor. It is only called once in the CheckerGame class in order to use the cpPointer which handles drawing
+
 }
 
 Checkerpiece::Checkerpiece(sf::Color color, int radius, int startingX, int startingY, const int kingRow, const int startingRow, const int player) 
@@ -21,7 +23,6 @@ Checkerpiece::Checkerpiece(sf::Color color, int radius, int startingX, int start
 	setFillColor(color);
 }
 
-// getters
 bool Checkerpiece::getKing()
 {
 	return isKing;
@@ -42,32 +43,40 @@ const int Checkerpiece::getPlayer()
 	return player;
 }
 
-// setters
 void Checkerpiece::setKing(bool isKing)
 {
 	this->isKing = isKing;
 }
 
-// draw the checkerpieces to the SFML window
+// Dibuja las piezas en la ventana SFML
 void Checkerpiece::drawCheckers(sf::RenderWindow& window, const vector<Checkerpiece*>& checkers)
 {
 	sf::CircleShape circle;
 
-	// only draw checkers if the container is not empty
+	// DIbuja si el vector no esta vacio
 	if(!checkers.empty())
 	{
-		if(XOFFSET == YOFFSET) // check if the width and height of the window are the same
-			circle.setRadius(WINDOW_WIDTH / (2 * SQUARES_HORIZONTAL)); // all the checkerpieces have the same radius 
-		else if(XOFFSET > YOFFSET)
-			circle.setRadius(WINDOW_HEIGHT / (2 * SQUARES_HORIZONTAL));
-		else
-			circle.setRadius(WINDOW_WIDTH / (2 * SQUARES_HORIZONTAL));
+        // Comprueba que el ancho y alto de la ventana sea el mismo
+		if(XOFFSET == YOFFSET){
+            circle.setRadius(WINDOW_WIDTH / (2 * SQUARES_HORIZONTAL)); // Da el mismo radio a todas las fichas
+        }
+
+		else if(XOFFSET > YOFFSET){
+            circle.setRadius(WINDOW_HEIGHT / (2 * SQUARES_HORIZONTAL));
+        }
+
+		else{
+            circle.setRadius(WINDOW_WIDTH / (2 * SQUARES_HORIZONTAL));
+        }
+
 		
 		vector<Checkerpiece*>::const_iterator it;
 		for(it = checkers.begin(); it != checkers.end(); ++it)
 		{
 			circle.setPosition((*it)->getPosition().x, (*it)->getPosition().y);
 			circle.setFillColor((*it)->getFillColor());
+
+            // Resalta la ficha si es rey
 			if((*it)->getKing())
             {
 				circle.setOutlineThickness(-10);

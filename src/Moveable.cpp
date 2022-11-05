@@ -3,31 +3,25 @@
 using std::vector;
 using std::abs;
 
-/*
-*	The moveable function determines whether or not the checker
-*	is making a valid movement. It does not check whether or not the future
-*	square it is moving to is occupied, that is done externally in CheckerGame class.
-*	We first check if the checker is moving onto a square containing a friendly checker.
-*	Then we check both cases of wether or not the current checker is a king.
-*	If it is a pawn, we check to make sure it is moving in the right direction,
-*	otherwise it is not necessary because a king can move in any direciton.
-*	Lastly, we check to see if the distance is moveable (one square at a time).
-*	All default, or unchecked cases will return false.
-*/
+
+
+// Verifica la validez de un movimiento sin importar que la casilla llegada este ocupada
 bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Square* future, const int& currentIndex)
 {
+    // Si la ficha que se piensa saltar es amiga
 	if(friendly(checkers, future))
 		return false;
 
 	if(static_cast<unsigned>(currentIndex) < checkers.size())
 	{
-		// if a king is being moved
+		// Si la ficha a mover es un rey
 		if(checkers.at(currentIndex)->getKing()) 
 		{
-			// movement on the checkerboard from current to future square is always the same color (black to black)
+
+            // Si las casillas de salida y llegada son del mismo color
 			if(current->getFillColor() == future->getFillColor()) 
 			{
-				// make sure that the distance is within the approriate distance range
+				// Comprueba que la distancia este en el rango apropiado
 				if(moveableDistance(static_cast<int>(current->getPosition().x), static_cast<int>(current->getPosition().y),
 					static_cast<int>(future->getPosition().x), static_cast<int>(future->getPosition().y))) 
 						return true;
@@ -37,16 +31,17 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
 			else
 				return false;
 		}
-		// otherwise a pawn is being moved (can only move diagonal, "forwards", which is determined by their king row)
+		// Si no es rey, es un peon (solo se mueve en diagonal hacia el 'frente' dependiemndo de su fila para coronarse)
 		else
 		{
-			// movement on the checkerboard from current to future square is always the same color (black to black)
+			// Si las casillas de salida y llegada son del mismo color
 			if(current->getFillColor() == future->getFillColor())
 			{
-				// case: KING_ROW_0 (northern part of the checkerboard relative to the monitor)
+				// Si: KING_ROW_0 (Parte arriba de la ventana)
 				if(checkers.at(currentIndex)->getKingRow() == KING_ROW_0)
 				{
-					// pawn is headed towards ROW 0, so y must decrease in the computer's coordinate system
+
+                    // Peon va hacia ROW 0, entonces coordenada Y debe disminuir
 					if(current->getPosition().y > future->getPosition().y)
 					{
 						if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -57,10 +52,10 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
 					else
 						return false;
 				}
-				// case: KING_ROW_7 (southern part of the checkerboard relative to the monitor)
+				// Si: KING_ROW_7 (parte de abajo de la ventana)
 				else if(checkers[currentIndex]->getKingRow() == KING_ROW_7)
 				{
-					// pawn is headed towards ROW 7, so y must increase in the computer's coordinate system
+					// Peon va hacia ROW 7, entonces coordenada Y debe aumentar
 					if(current->getPosition().y < future->getPosition().y)
 					{
 						if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -79,21 +74,24 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
 		}
 	}
 	else
-		return false; // default return of false
+		return false;
 }
 
-// overloaded moveable which will directly check to make sure the future square isn't occupied
+// Funcion sobrecargado que verifica que la casilla llegada no este ocupada
 bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
 {
-	// check to make sure future position isn't already occupied.
+
+    // Comprueba que la casilla de llegada no este ocupada
 	if(future->getOccupied())
 		return false;
-	else if(checker->getKing()) // a king is being moved
+
+    // Si se esta moviendo un rey
+	else if(checker->getKing())
 	{
-		// movement on the checkerboard from current to future square is always the same color (black to black)
+		// Si las casillas de salida y llegada son del mismo color
 		if(current->getFillColor() == future->getFillColor())
 		{
-			// no need to check forward or backward movement for kings
+			// No se verifica la direccion del movimineto porque es un rey
 			if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
 				return true;
 			else
@@ -102,15 +100,18 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
 		else
 			return false;
 	}
-	else // a pawn is being moved (can only move diagonal and in one direction)
+
+    // Si no es rey, es un peon
+	else
 	{
-		// movement on the checkerboard from current to future square is always the same color (black to black)
+        // Si las casillas de salida y llegada son del mismo color
 		if(current->getFillColor() == future->getFillColor()) 
 		{
-			// pawns can only move forward, where forward is defined by what team the pawn is on
+            //Si: KING_ROW_0 (parte de arriba de la ventana)
 			if(checker->getKingRow() == KING_ROW_0) 
 			{
-				// pawn is headed towards ROW 0, so y decreases in the computer's coordinate system
+
+                // Peon va hacia ROW 0, entonces coordenada Y debe disminuir
 				if(current->getPosition().y > future->getPosition().y) 
 				{
 					if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -121,10 +122,11 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
 				else
 					return false;
 			}
-			// this pawn can only move "down" the board, in terms of the computer's coordinate system, y must increase
+
+            // Si: KING_ROW_7 (parte de abajo de la ventana)
 			else if(checker->getKingRow() == KING_ROW_7)
 			{
-				// pawn is headed towards ROW 7, so y must increase in the computer's coordinate system
+				// Peon va hacia ROW 7, entonces coordenada Y debe disminuir
 				if(current->getPosition().y < future->getPosition().y)
 				{
 					if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -143,78 +145,70 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
 	}
 }
 
-// helper function that checks the distance between current and future relative to the offset.
+// Comprueba la distancia entre la casilla de salida y llegada con respecto al offset.
 bool Moveable::moveableDistance(const int& currentX, const int& currentY, const int& futureX, const int& futureY)
 {
 	if((abs(currentX - futureX) <= XOFFSET) && (futureX <= (XOFFSET * SQUARES_HORIZONTAL)) && (futureX >= 0))
 		if((abs(currentY - futureY) <= YOFFSET) && (futureY <= (YOFFSET * SQUARES_VERTICAL)) && (futureY >= 0))
-			return true; // distance is moveable
-	return false; // distance is not moveable
+			return true; // Distancia es valida
+	return false; // Distancia no es valida
 }
 
-// find the general direction from current relative to future (in terms of a 2-dimensional unit circle)
+// Encuentra la direccion general de salida con respecto a la llegada (como si fueran angulos)
 int Moveable::findGeneralDirection(Square* current, Square* future)
 {
+    // Pensar la direccion general como la direcion en coordenadas donde el angulo es la direccion
 	if((current->getPosition().x < future->getPosition().x) && (current->getPosition().y == future->getPosition().y))
-		return 0; // general direction is 0 degrees towards the right
+		return 0; // Direccion general al este
 	else if((current->getPosition().x > future->getPosition().x) && (current->getPosition().y == future->getPosition().y))
-		return 180; // general direction is 180 degrees towards the left
+		return 180; // Direccion general al oeste
 	else if((current->getPosition().x == future->getPosition().x) && (current->getPosition().y < future->getPosition().y))
-		return 270; // general direction is 270 degrees straight downwards
+		return 270; // Direccion general al sur
 	else if((current->getPosition().x == future->getPosition().x) && (current->getPosition().y > future->getPosition().y))
-		return 90; // general direction is 90 degrees straight upwards
+		return 90; // Direccion general al norte
 	else if((current->getPosition().x < future->getPosition().x) && (current->getPosition().y > future->getPosition().y))
-		return 45; // general direction is 45 degrees upwards and to the right
+		return 45; // Direccion general al noreste
 	else if((current->getPosition().x < future->getPosition().x) && (current->getPosition().y < future->getPosition().y))
-		return 315; // general direction is 315 degrees downwards and to the right
+		return 315; // Direccion general al sureste
 	else if((current->getPosition().x > future->getPosition().x) && (current->getPosition().y > future->getPosition().y))
-		return 135; // general direction is 135 degrees upwards and to the left
+		return 135; // Direccion general al noroeste
 	else if((current->getPosition().x > future->getPosition().x) && (current->getPosition().y < future->getPosition().y))
-		return 225; // general direction is 225 degrees downwards and to the left
+		return 225; // Direccion general al suroeste
 	else return -1;
 }
 
 /*
-*	jumpBySquare checks to see if the player can perform a jump by choosing the square to land on following a jump. 
-*	Future square is the square to land on followin the jump (should be unoccupied).
-*	Temp square is the middle square (should be occupied).
-*	First we check to make sure that the moving checker isn't jumping over a friendly checker.
-*	Then we check the distance between current->temp and temp->future by calling moveable().
+    Verifica si el jugador puede realizar un salto al seleccionar la casilla a la que quiere llegar
+    La casilla actual es la de salida, la temporal es la que se va a saltar y la de futura es la de llegada
 */
 bool Moveable::jumpBySquare(std::vector<Checkerpiece*> checkers, Square* current, Square* future, Square* temp, const int& currentIndex)
 {
 	if(friendly(checkers, temp, future))
 		return false;
 	if(temp->getOccupied())
-		if(moveable(checkers, current, temp, currentIndex)) // checks if current->temp is moveable
-			if(moveable(checkers, temp, future, currentIndex)) // checks if temp->future is moveable 
+		if(moveable(checkers, current, temp, currentIndex)) // Comprueba si el movimiento de la casilla actual a la temporal es valido
+			if(moveable(checkers, temp, future, currentIndex)) // Comprueba si el movimiento de la casilla temporal a la futura es valido
 				return true;
 	return false;						
 }
 
 /*
-*	jumpByChecker checks if the user can perform a jump by selecting the checker they want to jump over.
-*	Future square is the square to jump over (should be occupied).
-*	Temp square is the square to land on following the jump (should be unoccipied).
-*	First we check to make sure that the moving checker isn't jumping over a friendly checker.
-*	Then we check the distance from future->temp and then current->future by calling moveable(). 
+    Verifica si el jugador puede realizar un salto al seleccionar la ficha a la que va a saltar
+    La casilla actual es la de salida, la temporal es la de llegada y la de futura es la que se va a saltar
 */
 bool Moveable::jumpByChecker(std::vector<Checkerpiece*> checkers, Square* current, Square* future, Square* temp, const int& currentIndex)
 {
 	if(friendly(checkers, temp, future))
 		return false;
 	if(!temp->getOccupied())
-		if(moveable(checkers, future, temp, currentIndex)) // checks if current->temp is moveable
-			if(moveable(checkers, current, future, currentIndex)) // checks if temp->future is moveable 
+		if(moveable(checkers, future, temp, currentIndex)) // // Comprueba si el movimiento de la casilla futura a la temporal es valido
+			if(moveable(checkers, current, future, currentIndex)) // Comprueba si el movimiento de la casilla actual a la futura es valido
 				return true;
 	return false;
 }
 
-/* 
-*	We check if the current checker is trying to move over a friendly checker by scanning the temp/future square's
-*	alongside every other checker that the player has on the board to see if their positions match. 
-*	If there's a match we return true. Return false otherwise.
-*/
+
+// Comprueba que la ficha intenta saltar a una ficha amiga, al compara la casilla temporal o futura con las coordenadas de las fichas del jugador
 bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* temp, Square* future)
 {
 	vector<Checkerpiece*>::const_iterator it;
@@ -224,6 +218,7 @@ bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* temp, Squ
 	return false;
 }
 
+// Comprueba que la ficha intenta saltar a una ficha amiga, al compara la casilla futura con las coordenadas de las fichas del jugador
 bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* future)
 {
 	vector<Checkerpiece*>::const_iterator it;
@@ -233,16 +228,8 @@ bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* future)
 	return false;
 }
 
-/*
-*	The hasJump function figures out if the active checkerpiece in play can jump.
-*	We can the enemy checkers to see if one is jumpeable by the active checker.
-*	First checking if the active checker is king,
-*	if it is not a king then we check which king row it has,
-*	and then we iterate through several cases to see if the active checker can safely 
-*	land a jump over the enemy (by making sure that landing space is unoccupied).
-*	We assume that the active checker is not within the enemy checker list.
-*	There's also the kitty corner jump bug (documentation in Checkerboard.hpp) for cases 135, 225.
-*/
+
+// Comprueba si la ficha en juego puede realizar un salto
 bool Moveable::hasJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy, Checkerboard*& tempBoard)
 {
 	Square* future;
@@ -250,117 +237,142 @@ bool Moveable::hasJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy
 	vector<Checkerpiece*>::const_iterator it;
 	for(it = enemy.begin(); it != enemy.end(); ++it)
 	{
-		if(!checker->getKing()) // test only 2 possible jumps
+        // Si NO es rey
+		if(!checker->getKing())
 		{
-			if(checker->getKingRow() == KING_ROW_7) // the current check is moving southward
+            // Si: KING_ROW_7 (se mueve hacia abajo)
+			if(checker->getKingRow() == KING_ROW_7)
 			{
+                // Comprueba la direccion suroeste (255)
 				if((*it)->getPosition().x != 0 && abs(checker->getPosition().x - XOFFSET) == (*it)->getPosition().x 
-					&& (checker->getPosition().y  + YOFFSET) == (*it)->getPosition().y) // first check 225 degrees ( down and to the left )
+					&& (checker->getPosition().y  + YOFFSET) == (*it)->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) abs(checker->getPosition().x - (2*XOFFSET));
 					futureY = (int) checker->getPosition().y + (2*YOFFSET);
-					// now see if the landing square is occupied
+
+					// Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
-						return true; // can jump
+						return true; // Puede saltar
 				}
+
+                // Comprueba la direccion sureste (315)
 				else if((checker->getPosition().x + XOFFSET) == (*it)->getPosition().x 
-					&& (checker->getPosition().y + YOFFSET) == (*it)->getPosition().y) // now check 315 degrees ( down and to the right )
+					&& (checker->getPosition().y + YOFFSET) == (*it)->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+					// Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) checker->getPosition().x + (2*XOFFSET);
 					futureY = (int) checker->getPosition().y + (2*YOFFSET);
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
-						return true; // can jump
+						return true; // Puede saltar
 				}
 			}
-			else // the current checker is moving northward up the board
+            // Si NO es: KING_ROW_7 (se mueve hacia arriba)
+			else
 			{
+                // Comprueba la direccion noreste (45)
 				if((*it)->getPosition().y != 0 && (checker->getPosition().x + XOFFSET) == (*it)->getPosition().x 
-					&& abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y) // first check 45 degrees ( up and to the right )
+					&& abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) checker->getPosition().x + (2*XOFFSET);
 					futureY = (int) abs(checker->getPosition().y - (2*YOFFSET));
-					// now see if the landing square is occupied
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
-						return true; // can jump
+						return true; // Puede saltar
 				}
+
+                // Comprueba la direccion noroeste (135)
 				else if((*it)->getPosition().y != 0 && (*it)->getPosition().x != 0 && abs(checker->getPosition().x - XOFFSET) == (*it)->getPosition().x 
-					&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y) // now check 135 degrees ( up and to the left )
+					&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) abs(checker->getPosition().x - (2*XOFFSET));
 					futureY = (int) abs(checker->getPosition().y - (2*YOFFSET));
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
-						return true; // can jump
+						return true; // Puede saltar
 				}
 			}
 		}
-		else // test all 4 possible jumps because we're dealing with a king checker
+
+        // Es rey, comprueba los 4 casos
+		else
 		{
+            // Comprueba la direccion suroeste (255)
 			if((*it)->getPosition().x != 0 && checker->getPosition().x != 0 && std::abs(checker->getPosition().x - XOFFSET) == (*it)->getPosition().x 
-				&& (checker->getPosition().y  + YOFFSET) == (*it)->getPosition().y) // first check 225 degrees ( down and to the left )
+				&& (checker->getPosition().y  + YOFFSET) == (*it)->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
 				futureY = (int) checker->getPosition().y + (2*YOFFSET);
-				// now see if the landing square is occupied
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
-					return true; // can jump
+					return true; // Puede salta
 			}
+
+            // Comprueba la direccion sureste (315)
 			else if((checker->getPosition().x + XOFFSET) == (*it)->getPosition().x 
-				&& (checker->getPosition().y + YOFFSET) == (*it)->getPosition().y) // now check 315 degrees ( down and to the right )
+				&& (checker->getPosition().y + YOFFSET) == (*it)->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) checker->getPosition().x + (2*XOFFSET);
 				futureY = (int) checker->getPosition().y + (2*YOFFSET);
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
-					return true; // can jump
+					return true; // Puede salta
 			}
+
+            // Comprueba la direccion noreste (45)
 			else if((*it)->getPosition().y != 0 && (checker->getPosition().x + XOFFSET) == (*it)->getPosition().x 
-				&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y) // first check 45 degrees ( up and to the right )
+				&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) checker->getPosition().x + (2*XOFFSET);
 				futureY = (int) std::abs(checker->getPosition().y - (2*YOFFSET));
-				// now see if the landing square is occupied
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
-					return true; // can jump
+					return true; // Puede salta
 			}
+
+            // Comprueba la direccion noroeste (135)
 			else if((*it)->getPosition().y != 0 && (*it)->getPosition().x != 0 && checker->getPosition().x != 0 
 				&& std::abs(checker->getPosition().x - XOFFSET) == (*it)->getPosition().x 
-					&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y) // now check 135 degrees ( up and to the left )
+					&& std::abs(checker->getPosition().y - YOFFSET) == (*it)->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) abs(checker->getPosition().x - (2*XOFFSET));
 				futureY = (int) abs(checker->getPosition().y - (2*YOFFSET));
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
-					return true; // can jump
+					return true; // Puede salta
 			}
 		}
 	}
 	return false;
 }
 
-/*
-*	Similar to hasJump, we look to see if the active checker can jump,
-*	but instead of returning a boolean, we return the coords of
-*	the current checker, the enemy checker that we're 
-*	jumping over, and where we'll land (futureX/Y), 
-*	(in that order, so coords[0],coords[1] = currentX, currentY).
-*/
+// Comprueba si la ficha en juego puede realizar un salto, regresa las coordenadas del salto (actual,futura y saltada)
 vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy, Checkerboard*& tempBoard)
 {
-	// the coords where the active checker would land after jumping, and the coords of the checker to jump over
+    // Coordenadas de la ficha activa actual, despues del salto y las de la ficha saltada
 	const int TOTAL_POSITIONS = 6;
 	vector<int>* coords = new vector<int> (TOTAL_POSITIONS);
 	coords->reserve(TOTAL_POSITIONS);
@@ -368,17 +380,21 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 	int futureX, futureY;
 	for(unsigned int i = 0; i != enemy.size(); ++i)
 	{
-		if(!checker->getKing()) // test only 2 possible jumps depending on KING_ROW
+        // Si NO es rey
+		if(!checker->getKing())
 		{
-			if(checker->getKingRow() == KING_ROW_7) // the current check is moving southward
+            // Si: KING_ROW_7 (se mueve hacia abajo)
+			if(checker->getKingRow() == KING_ROW_7)
 			{
+                // Comprueba la direccion suroeste (255)
 				if(enemy[i]->getPosition().x != 0 && std::abs(checker->getPosition().x - XOFFSET) == enemy[i]->getPosition().x 
-					&& (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y) // first check 225 degrees ( down and to the left )
+					&& (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
 					futureY = (int) checker->getPosition().y + (2*YOFFSET);
-					// now see if the landing square is occupied
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
 					{
@@ -388,15 +404,19 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 						coords->at(3) = (int) enemy[i]->getPosition().y;
 						coords->at(4) = futureX;
 						coords->at(5) = futureY;
-						return coords; // return coords of jump
+						return coords; // Regresa las coordenadas del salto
 					}
 				}
+
+                // Comprueba la direccion sureste (315)
 				else if((checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x 
-					&& (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y) // now check 315 degrees ( down and to the right )
+					&& (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) checker->getPosition().x + (2*XOFFSET);
 					futureY = (int) checker->getPosition().y + (2*YOFFSET);
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
 					{
@@ -406,19 +426,23 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 						coords->at(3) = (int) enemy[i]->getPosition().y;
 						coords->at(4) = futureX;
 						coords->at(5) = futureY;
-						return coords; // return coords of jump
+						return coords; // Regresa las coordenadas del salto
 					}
 				}
 			}
-			else // the current checker is moving northward up the board
+
+            // Si NO es: KING_ROW_7 (se mueve hacia arriba)
+			else
 			{
+                // Comprueba la direccion noreste (45)
 				if(enemy[i]->getPosition().y != 0 && (checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x 
-					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y) // first check 45 degrees ( up and to the right )
+					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) checker->getPosition().x + (2*XOFFSET);
 					futureY = (int) std::abs(checker->getPosition().y - (2*YOFFSET));
-					// now see if the landing square is occupied
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
 					{
@@ -428,15 +452,19 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 						coords->at(3) = (int) enemy[i]->getPosition().y;
 						coords->at(4) = futureX;
 						coords->at(5) = futureY;
-						return coords; // return coords of jump
+						return coords; // Regresa las coordenadas del salto
 					}
 				}
+
+                // Comprueba la direccion noroeste (135)
 				else if(enemy[i]->getPosition().y != 0 && enemy[i]->getPosition().x != 0 && std::abs(checker->getPosition().x - XOFFSET) == enemy[i]->getPosition().x 
-					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y) // now check 135 degrees ( up and to the left )
+					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y)
 				{
-					// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 					futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
 					futureY = (int) std::abs(checker->getPosition().y - (2*YOFFSET));
+
+                    // Ve si la casilla de llegada esta ocupada
 					future = tempBoard->findSquare(futureX, futureY);
 					if(future && !future->getOccupied())
 					{
@@ -446,20 +474,24 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 						coords->at(3) = (int) enemy[i]->getPosition().y;
 						coords->at(4) = futureX;
 						coords->at(5) = futureY;
-						return coords; // return coords of jump
+						return coords; // Regresa las coordenadas del saltop
 					}
 				}
 			}
 		}
-		else // test all 4 possible jump directions because we're dealing with a king checker
+
+        // Es rey, comprueba los 4 caso
+		else
 		{
+            // Comprueba la direccion suroeste (255)
 			if(enemy[i]->getPosition().x != 0 && checker->getPosition().x != 0 && std::abs(checker->getPosition().x - XOFFSET) == enemy[i]->getPosition().x 
-				&& (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y) // first check 225 degrees ( down and to the left )
+				&& (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
 				futureY = (int) checker->getPosition().y + (2*YOFFSET);
-				// now see if the landing square is occupied
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
 				{
@@ -469,15 +501,19 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 					coords->at(3) = (int) enemy[i]->getPosition().y;
 					coords->at(4) = futureX;
 					coords->at(5) = futureY;
-					return coords; // return coords of jump
+					return coords; // Regresa las coordenadas del salto
 				}
 			}
+
+            // Comprueba la direccion sureste (315)
 			else if((checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x 
-				&& (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y) // now check 315 degrees ( down and to the right )
+				&& (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) checker->getPosition().x + (2*XOFFSET);
 				futureY = (int) checker->getPosition().y + (2*YOFFSET);
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
 				{
@@ -487,16 +523,19 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 					coords->at(3) = (int) enemy[i]->getPosition().y;
 					coords->at(4) = futureX;
 					coords->at(5) = futureY;
-					return coords; // return coords of jump
+					return coords; // Regresa las coordenadas del salto
 				}
 			}
+
+            // Comprueba la direccion noreste (45)
 			else if(enemy[i]->getPosition().y != 0 && (checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x 
-				&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y) // first check 45 degrees ( up and to the right )
+				&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) checker->getPosition().x + (2*XOFFSET);
 				futureY = (int) std::abs(checker->getPosition().y - (2*YOFFSET));
-				// now see if the landing square is occupied
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
 				{
@@ -506,16 +545,20 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 					coords->at(3) = (int) enemy[i]->getPosition().y;
 					coords->at(4) = futureX;
 					coords->at(5) = futureY;
-					return coords; // return coords of jump
+					return coords; // Regresa las coordenadas del salto
 				}
 			}
+
+            // Comprueba la direccion noroeste (135)
 			else if(enemy[i]->getPosition().y != 0 && enemy[i]->getPosition().x != 0 && checker->getPosition().x != 0 
 				&& std::abs(checker->getPosition().x - XOFFSET) == enemy[i]->getPosition().x 
-					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y) // now check 135 degrees ( up and to the left )
+					&& std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y)
 			{
-				// enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                // Ficha enemiga esta en rango de salto, comprueba que tenga una ficha (amiga o enemiga) para saltar
 				futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
 				futureY = (int) std::abs(checker->getPosition().y - (2*YOFFSET));
+
+                // Ve si la casilla de llegada esta ocupada
 				future = tempBoard->findSquare(futureX, futureY);
 				if(future && !future->getOccupied())
 				{
@@ -525,20 +568,16 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
 					coords->at(3) = (int) enemy[i]->getPosition().y;
 					coords->at(4) = futureX;
 					coords->at(5) = futureY;
-					return coords; // return coords of jump
+					return coords; // Regresa las coordenadas del salto
 				}
 			}
 		}
 	}
 
-	return nullptr; // return empty coords, size of zero
+	return nullptr; // Regresa las coordenadas del salto vacias
 }
 
-/*
-*	Similar functionality to hasJump, but only looks for a move by using the moveable function.
-*	It is important to note that the moveable function does not verify if the future square is occupied,
-*	so we must verify it for ourselves here.
-*/
+// Comprueba si la ficha en juego puede realizar un movimiento
 bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy, Checkerboard*& checkerboard)
 {
 	const int TOTAL_POSITIONS = 4;
@@ -547,8 +586,11 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 	int currentX = (int) active->getPosition().x;
 	int currentY = (int) active->getPosition().y;
 	int futureX, futureY;
-	Square* current, *future; // current and future squares to move onto
-	// iterate through the different cases
+	Square* current, *future; // Casillas actual y futura
+
+	// Realiza iteraciones para los posibles casos
+
+    // Comprueba la direccion noreste (45)
 	futureX = currentX + XOFFSET;
 	futureY = currentY + YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -557,6 +599,7 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 		if(!future->getOccupied())
 			return true;
 
+    // Comprueba la direccion suroeste (255)
 	futureX = currentX - XOFFSET;
 	futureY = currentY - YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -565,6 +608,7 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 		if(!future->getOccupied())
 			return true;
 
+    // Comprueba la direccion noroeste (135)
 	futureX = currentX - XOFFSET;
 	futureY = currentY + YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -573,6 +617,7 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 		if(!future->getOccupied())
 			return true;
 
+    // Comprueba la direccion sureste (315)
 	futureX = currentX + XOFFSET;
 	futureY = currentY - YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -581,7 +626,7 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 		if(!future->getOccupied())
 			return true;
 	
-	return false; // no move available
+	return false; // No hay movimiento disponible
 }
 
 /*
@@ -591,6 +636,8 @@ bool Moveable::hasMove(Checkerpiece* active, const vector<Checkerpiece*>& enemy,
 *	the X/Y Offsets until we find one that's moveable.
 *	the coords return corresponds to (coords[0,1] = currentX,Y, and coords[2,3] = futureX,Y).
 */
+
+// Comprueba si la ficha en juego puede realizar un movimiento, regresa las coordenadas del movimiento (actual y futura)
 vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboard)
 {
 	const int TOTAL_POSITIONS = 4;
@@ -599,9 +646,11 @@ vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboar
 	int currentX = static_cast<int>(active->getPosition().x);
 	int currentY = static_cast<int>(active->getPosition().y);
 	int futureX, futureY;
-	Square* current, *future; // current and future squares to move from and onto
+	Square* current, *future; // Casillas actual y futura
 
-	// iterate through the different cases of future X,Y manipulations
+    // Realiza iteraciones para los posibles casos
+
+    // Comprueba la direccion noreste (45)
 	futureX = currentX + XOFFSET;
 	futureY = currentY + YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -613,8 +662,10 @@ vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboar
 		coords->at(1) = currentY;
 		coords->at(2) = futureX;
 		coords->at(3) = futureY;
-		return coords;
+		return coords; // Regresa las coordenadas del movimiento
 	}
+
+    // Comprueba la direccion suroeste (255)
 	futureX = currentX - XOFFSET;
 	futureY = currentY - YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -626,8 +677,10 @@ vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboar
 		coords->at(1) = currentY;
 		coords->at(2) = futureX;
 		coords->at(3) = futureY;
-		return coords;
+		return coords; // Regresa las coordenadas del movimiento
 	}
+
+    // Comprueba la direccion noroeste (135)
 	futureX = currentX - XOFFSET;
 	futureY = currentY + YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -639,8 +692,10 @@ vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboar
 		coords->at(1) = currentY;
 		coords->at(2) = futureX;
 		coords->at(3) = futureY;
-		return coords;
+		return coords; // Regresa las coordenadas del movimiento
 	}
+
+    // Comprueba la direccion sureste (315)
 	futureX = currentX + XOFFSET;
 	futureY = currentY - YOFFSET;
 	current = checkerboard->findSquare(currentX, currentY);
@@ -652,8 +707,8 @@ vector<int>* Moveable::findMove(Checkerpiece* active, Checkerboard*& checkerboar
 		coords->at(1) = currentY;
 		coords->at(2) = futureX;
 		coords->at(3) = futureY;
-		return coords;
+		return coords; // Regresa las coordenadas del movimiento
 	}
 
-	return nullptr; // return empty coords of size 0
+	return nullptr; // Regresa las coordenadas del movimiento vacias
 }

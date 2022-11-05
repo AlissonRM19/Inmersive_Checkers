@@ -1,45 +1,29 @@
+
 /*
-*	The CheckerGame class has the checker game loop and keeps track of the state of the game (which player is winning).
-*	This class handles manipulations to checkerpieces as well as high level AI operations. For instance, during gameplay a player will click
-*	an arbitrary square to select a checker to move (green highlight), and then the player will click another square to move the checker onto (magenta highlight).
-*	The computer checks to see if that jump or movement is legal by finding the square and then finding the checker that resides on the square.
-*	There are 2 methods for jumping once a checker has been selected, either by selecting the checker to jump over, or by selecting an empty space beyond the checker to jump over.
-*
-*		***CHECKER RULES***
-*	1) Pawns move forward (towards their king row) and diagonal (one square).
-*	2) Kings move diagonal forward or backward (one square).
-*	3) If a jump presents itself, the checker in play must jump, but it can decide which jump to take and where.
-*	4) Double jumps can occur if the jumping checker does not need to make an additional move in order to secure the double jump.
-*	5) A pawn can become a king by traversing from its starting row towards the farthest row opposite of the starting row on the starting board.
-*	6) Last team standing wins.
-*
-*	It is assumed that only two players are playing at a time.
-*	At the moment, player one is red, and player two is blue.
-*	The checkers vector maintains an index of the checker that's in play. It should be consistent throughout the code for each turn.
+    La clase CheckerGame representa el estado del juego. se encarga del loop principal del juego, manejo de las piezas
+    y operaciones que realiza el AI para realizar dichas modificaciones.
 */
 
 #ifndef CHECKERGAME_HPP
 #define CHECKERGAME_HPP
 
-#include <SFML/Graphics.hpp> // allows window drawing
-#include <SFML/Audio.hpp> // allows audio loading and playback
-#include <SFML/Window.hpp> // allows window instantation
-#include <SFML/System.hpp> // needed for window instantion (and sf::Time)
+#include <SFML/Graphics.hpp> // Permite dibujar en la ventana
+#include <SFML/Window.hpp> // Permite instancias de la ventana
+#include <SFML/System.hpp> // Necesaria para las instancias de la ventana
 #include <iostream>
 #include <string>
-#include <fstream> // for file IO
-#include <ios> // for appending to save file
-#include <sstream> // for string streams
-#include <string> // for strings
-#include <vector> // for vectors
+#include <fstream> // Para archivos IO
+#include <ios> // Para agregar a archivos guardados
+#include <sstream> // Para cadenas de strings
+#include <string> // Para strings
+#include <vector> // Para vectores
 #include "AI.hpp"
-
 
 class CheckerGame
 {
 private:
-	bool isPlaying; // used to keep track of the state of the game
-	static int winner; // winner of the most recent game (0 if there's no winner)
+	bool isPlaying;
+	static int winner;
 	Checkerboard* checkerboard;
 	Checkerpiece cpDrawer;
 	Player* p1;

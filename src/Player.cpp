@@ -1,3 +1,4 @@
+
 #include "Player.hpp"
 
 using std::vector;
@@ -9,18 +10,17 @@ Player::Player(const int number, const bool isHuman)
 	: isHuman(isHuman)
 	, number(number)
 {
-	vector<Checkerpiece*> checkers; 
-	// reserve memory space for 12 checkers
-	checkers.reserve(MAX_CHECKERS_PER_TEAM);
+	vector<Checkerpiece*> checkers;
+	checkers.reserve(MAX_CHECKERS_PER_TEAM); // Reserva espacio para 12 fichas(maxima cantidad de fichas por jugador)
 }
 
+// Borra el vector de fichas del jugador
 Player::~Player()
 {
-	// erase the entire checker vector
 	checkers.erase(checkers.begin(), checkers.end());
 }
 
-/* Display the checkers for this player */
+// Muestra las fichas del jugador
 void Player::displayCheckers() 
 {
 	cout << endl <<"Display Player# " << this->getNumber() << "'s active checkers" << endl;
@@ -30,49 +30,48 @@ void Player::displayCheckers()
 			"King Row: " << (*it)->getKingRow() << " King: " << (*it)->getKing() << endl;
 }
 
-// add a checker to the player's checkers vector
+// Agrega fichas al vector de fichas del jugador
 void Player::addChecker(Checkerpiece* checkerpiece)
 {
 	checkers.push_back(checkerpiece);
 }
 
-// returns the index # of a checkerpiece in the checkers vector by (x, y) position
+// Encuentra el indice de una ficha en el vector de fichas del jugador
 int Player::findCheckerIndex(const int& x, const int& y)
 {
 	for(unsigned int i = 0; i != this->checkers.size(); ++i)
 		if(checkers[i]->getPosition().x == x && checkers[i]->getPosition().y == y)
 			return i;
-	return -1; // checker not found
+	return -1; // Si la ficha no se encontro
 }
 
-// finds a checkerpiece in the checkers vector by comparing square position and checker position
+// Encuentra una ficha en el vector de fichas del jugador al comparar la posicion de una casilla y la posicion de una ficha
 int Player::findCheckerIndex(const Square* tempSquare)
 {
 	for(unsigned int i = 0; i < checkers.size(); ++i)
 		if((checkers[i]->getPosition().x == tempSquare->getPosition().x) && (checkers[i]->getPosition().y == tempSquare->getPosition().y))
 			return i;
-	return -1; // checker not found
+	return -1; // Si la ficha no se encontro
 }
 
-// delete a checker
+// Borra una ficha
 void Player::deleteChecker(const int& deleteIndex)
 {
 	this->checkers.erase(this->checkers.begin() + deleteIndex);
 }
 
-// delete all the checkers
+// Borra todas las fichas
 void Player::deleteAllCheckers()
 {
 	this->checkers.erase(this->checkers.begin(), this->checkers.end());
 }
 
-// getters
 vector<Checkerpiece*>& Player::getCheckersVector()
 {
 	return checkers;
 }
 
-// return the Checkerpiece* at the index
+// Regresa la ficha en el indice dado
 Checkerpiece* Player::getChecker(const int& index)
 {
 	return this->checkers.at(index);
@@ -85,7 +84,7 @@ bool Player::getTurn()
 
 int Player::getCounter()
 {
-	return checkers.size();
+    return checkers.size();
 }
 
 const bool Player::getIsHuman()
@@ -98,7 +97,6 @@ const int Player::getNumber()
 	return number;
 }
 
-// setters
 void Player::setTurn(const bool& turn)
 {
 	this->turn = turn;

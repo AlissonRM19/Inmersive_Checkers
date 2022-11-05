@@ -2,12 +2,12 @@
 
 Checkerboard::Checkerboard(sf::RenderWindow& window)
 {
-	initSquareArray(); // initialize the checker squares
+	initSquareArray(); // Inicializa un array de casillas
 }
 
 Checkerboard::~Checkerboard()
 {
-	// delete the square pointers in the square array
+    // ELimina punteros en el array de casillas
 	for(int i = 0; i < SQUARES_VERTICAL; ++i)
 	{
 		for(int j = 0; j < SQUARES_HORIZONTAL; ++j)
@@ -18,17 +18,17 @@ Checkerboard::~Checkerboard()
 	}
 }
 
-// initialize the square array and determines if a square is occupied by a checker at start of game
+// Inicializa el array de casillas y determina si una casilla esta ocupada al inicio del juego
 void Checkerboard::initSquareArray()
 {
 	Square* tempSquare;
-	int idNumber = 0; // Square 0 is drawn at (0, 0) and has id number 0
+	int idNumber = 0; // Casilla 0 es dibujada en (0,0) y tiene un id 0
 
 	for(int i = 0; i < SQUARES_VERTICAL; ++i)
 	{	
 		for(int j = 0; j < SQUARES_HORIZONTAL; ++j)
 		{	
-			// initialize arbitrary square objects
+			// Inicializa los objetos casilla arbitrarios
 			tempSquare = new Square(sf::Vector2f(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET)), i, j, idNumber++);
 			squareArray[i][j] = tempSquare;
 			
@@ -44,6 +44,7 @@ void Checkerboard::initSquareArray()
 *	Draws an 8 by 8 square grid with checkered color pattern and also highlights the current square (green) and a mouseover square (magenta).
 *	The current and mouseOver values come from the CheckerGame, based upon where the player is pointing @ the board.
 */
+
 void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseOverY, int currentX, int currentY, bool selecting)
 {
 	Square* tempSquare;
@@ -107,7 +108,7 @@ void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseO
 	}
 }
 
-// print each square (#'s 0 thru 63) out on the console
+// Printea las casillas en consola
 void Checkerboard::printTheSquares()
 {
 	for(int i = 0; i < SQUARES_HORIZONTAL; ++i)
@@ -116,12 +117,8 @@ void Checkerboard::printTheSquares()
 				"Draw Coords: " << "(" << squareArray[i][j]->getPosition().x << ", " << squareArray[i][j]->getPosition().y << ") " << 
 					"Square Occupied: " << squareArray[i][j]->getOccupied() << std::endl;
 }
- 
-/*
-*	Finds a square on the board by creating a temp shape with standard size, and starting coords (x, y).
-*	We then start comparing squares in the squareArray until we find a match (intersection of coords).
-*	This is useful when the player clicks a square and we want to find that matching square in the squareArray.
-*/
+
+// Encuentra una casilla (comparando una casilla temporal con el array de casillas hsta encontrar una concordancia)
 Square* Checkerboard::findSquare(int x, int y)
 {	
 	sf::Vector2f size(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET));
@@ -137,7 +134,7 @@ Square* Checkerboard::findSquare(int x, int y)
 	return nullptr;
 }
 
-// finds a square on the board by the square's id number
+// Encuentra una casilla (mediante el id)
 Square* Checkerboard::findSquare(int idNumber)
 {
 	for(int i = 0; i < SQUARES_HORIZONTAL; ++i)
@@ -148,13 +145,10 @@ Square* Checkerboard::findSquare(int idNumber)
 	return nullptr;
 }
 
-/* 
-*	find the square that's being jumped onto in the checker game (for when the user selects the checker to jump over = temp)
-*	due to the computer coordinate system, the y coordinate may be subtracted when finding a checker in the downward direction
-*/
+// Encuentra una casilla de llegada de un salto
 Square* Checkerboard::findJumpOntoSquare(Square* temp, int generalDirection)
 {
-	// temp square is the square that the user selected to jump over (so find the square the user will land on (future) )
+    // Casilla temporal es la que se va a saltar (encontramos la casilla de llegada del salto)
 	sf::Vector2f size(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET));
 	sf::RectangleShape rect2;
 	rect2.setSize(size);
@@ -162,20 +156,21 @@ Square* Checkerboard::findJumpOntoSquare(Square* temp, int generalDirection)
 
 	switch(generalDirection)
 	{
-	case 0: // straight to the right
+	case 0: // Direccion general al este
 		x = temp->getPosition().x + XOFFSET;
 		y = temp->getPosition().y;
 		break;
-	case 45: // to the right and upward
+	case 45: // Direccion general al noreste
 		x = temp->getPosition().x + XOFFSET;
 		y = std::abs(temp->getPosition().y - YOFFSET);
 		break;
-	case 90: // straight upward
+	case 90: // Direccion general al norte
 		x = temp->getPosition().x;
 		y = std::abs(temp->getPosition().y - YOFFSET);
 		break;
-	case 135: // to the left and upwards
-		// this is a temporary fix for the "kitty corner jump" bug (see Checkerboard.hpp for more info)
+	case 135: // Direccion general al noroeste
+
+        // Solucion a un bug ("kitty corner jump")
 		if(temp->getPosition().x == 0) 
 			return nullptr;
 		else
@@ -184,12 +179,13 @@ Square* Checkerboard::findJumpOntoSquare(Square* temp, int generalDirection)
 			y = std::abs(temp->getPosition().y - YOFFSET);
 		}
 		break;
-	case 180: // straight to the left 
+	case 180: // Direccion general al oeste
 		x = std::abs(XOFFSET - temp->getPosition().x);
 		y = temp->getPosition().y;
 		break;
-	case 225: // to the left and downwards 
-		// this is a temporary fix for the "kitty corner jump" bug (see Checkerboard.hpp for more info)
+	case 225: // Direccion general al suroeste
+
+        // Solucion a un bug ("kitty corner jump")
 		if(temp->getPosition().x == 0) 
 			return nullptr;
 		else
@@ -198,11 +194,11 @@ Square* Checkerboard::findJumpOntoSquare(Square* temp, int generalDirection)
 			y = temp->getPosition().y + YOFFSET;
 		}	
 		break;
-	case 270: // straight down 
+	case 270: // Direccion general al sur
 		x = temp->getPosition().x;
 		y = YOFFSET + temp->getPosition().y;
 		break;
-	case 315: // to the right and downward 
+	case 315: // Direccion general al sureste
 		x = temp->getPosition().x + XOFFSET;
 		y = temp->getPosition().y + YOFFSET;
 		break;
@@ -219,13 +215,10 @@ Square* Checkerboard::findJumpOntoSquare(Square* temp, int generalDirection)
 	return nullptr;
 }
 
-/*
-* Find the square that the user's jumping over in the checker game (for when the user selects the square to land on following a jump).
-* Due to the computer coordinate system, the y coordinate may be subtracted when finding a checker in the downward direction.
-*/
+// Encuentra una casilla intermedia (casilla saltada)
 Square* Checkerboard::findIntermSquare(Square* temp, int generalDirection)
 {
-	// temp square is the square that the use selected to land on (so find the intermediate square from current to future)
+    // Casilla temporal es la que se va a saltar (encontramos la casilla intermedia desde casilla llegada del salto)
 	sf::Vector2f size(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET));
 	sf::RectangleShape rect2;
 	rect2.setSize(size);
@@ -233,35 +226,35 @@ Square* Checkerboard::findIntermSquare(Square* temp, int generalDirection)
 
 	switch(generalDirection)
 	{
-	case 0: // straight to the right
+	case 0: // Direccion general al este
 		x = std::abs(temp->getPosition().x - XOFFSET);
 		y = temp->getPosition().y;
 		break;
-	case 45: // to the right and upward
+	case 45: // Direccion general al este
 		x = std::abs(temp->getPosition().x - XOFFSET);
 		y = temp->getPosition().y + YOFFSET;
 		break;
-	case 90: // straight upward
+	case 90: // Direccion general al este
 		x = temp->getPosition().x;
 		y = temp->getPosition().y + YOFFSET;
 		break;
-	case 135: // to the left and upwards
+	case 135: // Direccion general al este
 		x = XOFFSET + temp->getPosition().x;
 		y = temp->getPosition().y + YOFFSET;
 		break;
-	case 180: // straight to the left 
+	case 180: // Direccion general al este
 		x = temp->getPosition().x + XOFFSET;
 		y = temp->getPosition().y;
 		break;
-	case 225: // to the left and downwards 
+	case 225: // Direccion general al este
 		x = XOFFSET + temp->getPosition().x;
 		y = std::abs(temp->getPosition().y - YOFFSET);
 		break;
-	case 270: // straight down 
+	case 270: // Direccion general al este
 		x = temp->getPosition().x;
 		y = std::abs(temp->getPosition().y - YOFFSET);
 		break;
-	case 315: // to the right and downward 
+	case 315: // Direccion general al este
 		x = std::abs(XOFFSET - temp->getPosition().x);
 		y = std::abs(temp->getPosition().y - YOFFSET);
 		break;
@@ -283,7 +276,7 @@ Square** Checkerboard::getSquareArray()
 	return *squareArray;
 }
 
-// checks if shape1's pixels intersect the pixels of shape2
+// Comprueba intersecciones entre pixeles de la figura 1 y la figura 2
 bool Checkerboard::intersects(const sf::RectangleShape shape1, const sf::RectangleShape shape2)
 {
 	sf::FloatRect r1 = shape1.getGlobalBounds();
